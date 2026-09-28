@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Palette taken from the club logo: navy emblem, red ECG line, white badge. */
+:root {
+  --color-ink: #0f1a2e;
+  --color-navy: #113275;
+  --color-navy-deep: #0a1d45;
+  --color-pulse: #d1263b;
+  --color-paper: #f4f6fb;
+  --color-line: #d3dae7;
+
+  /* Focus ring: navy on light surfaces, white on dark ones. */
+  --focus: var(--color-navy);
+  --header-h: 4.5rem;
+}
+
+.on-dark {
+  --focus: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 0.5rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@layer components {
+  /* Board panel — thin frame with T-shaped corner clips. */
+  .panel {
+    position: relative;
+    border: 1px solid var(--color-line);
+    background: #ffffff;
+    border-radius: 4px;
+  }
+
+  .tclip {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+  .tclip::before,
+  .tclip::after {
+    content: "";
+    position: absolute;
+    background: var(--color-pulse);
+  }
+  /* crossbar sits on the edge, stem points into the panel */
+  .tclip::before {
+    width: 16px;
+    height: 2px;
+    left: -8px;
+    top: -1px;
+  }
+  .tclip::after {
+    width: 2px;
+    height: 8px;
+    left: -1px;
+    top: 0;
+  }
+  .tclip-tl { top: -1px; left: -1px; }
+  .tclip-tr { top: -1px; right: -1px; }
+  .tclip-bl { bottom: -1px; left: -1px; }
+  .tclip-br { bottom: -1px; right: -1px; }
+  .tclip-bl::after,
+  .tclip-br::after {
+    top: -8px;
+  }
+
+  /* Photo mount: white mat like a printed photo, soft inner shadow, lifts on hover. */
+  .frame {
+    position: relative;
+    border: 1px solid var(--color-line);
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 3px;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .frame:hover {
+      transform: translateY(-3px) rotate(-0.6deg);
+      box-shadow: 0 14px 30px -16px rgb(10 29 69 / 0.45);
+    }
+  }
+  .frame-img {
+    position: relative;
+    overflow: hidden;
+  }
+  .frame-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow:
+      inset 0 0 0 1px rgb(15 26 46 / 0.08),
+      inset 0 1px 8px rgb(15 26 46 / 0.18);
+    pointer-events: none;
+  }
+
+  /* Strip of masking tape holding a photo to the board. */
+  .tape::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: -12px;
+    left: 50%;
+    width: 84px;
+    height: 24px;
+    transform: translateX(-50%) rotate(-4deg);
+    background: rgb(214 222 238 / 0.82);
+    box-shadow: 0 1px 2px rgb(15 26 46 / 0.12);
+  }
+
+  /* Rotated date label, like a sticker on the board. */
+  .sticker {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: var(--color-pulse);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border-radius: 3px;
+    transform: rotate(-2deg);
+    box-shadow: 0 2px 0 rgb(10 29 69 / 0.25);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 1.6rem;
+    font-weight: 700;
+    font-size: 0.975rem;
+    border-radius: 999px;
+    transition: background-color 150ms, color 150ms, border-color 150ms, transform 150ms;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-pulse {
+    background: var(--color-pulse);
+    color: #ffffff;
+    border: 1px solid var(--color-pulse);
+  }
+  .btn-pulse:hover {
+    background: #b51f32;
+    border-color: #b51f32;
+  }
+  .btn-outline {
+    border: 1.5px solid var(--color-navy);
+    color: var(--color-navy);
+  }
+  .btn-outline:hover {
+    background: var(--color-navy);
+    color: #ffffff;
+  }
+}
+
+/* Mobile hero strip: hide the scrollbar but keep it swipeable. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hero ECG line draws itself once on load. */
+@keyframes pulse-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.pulse-draw path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pulse-draw 1.6s 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse-draw path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
